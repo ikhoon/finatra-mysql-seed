@@ -19,8 +19,7 @@
 * [HikariCP](http://brettwooldridge.github.io/HikariCP/) - A high-performance JDBC connection pool.
 * [Quill](http://getquill.io/) - Alternative to **Slick**, [finagle-mysql](http://twitter.github.io/finagle/guide/Protocols.html#mysql)
 * [ScalaTest](http://www.scalatest.org/) - A testing tool for Scala and Java developers.
-* [TypesafeConfig](https://github.com/typesafehub/config)
- - Configuration library for JVM languages.
+* [TypesafeConfig](https://github.com/typesafehub/config) - Configuration library for JVM languages.
 * [Logback](http://logback.qos.ch/) - The Generic, Reliable, Fast & Flexible Logging Framework.
 * [Swagger](https://github.com/xiaodongw/swagger-finatra) - Add Swagger support for Finatra web framework.
 
