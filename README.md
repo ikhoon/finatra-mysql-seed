@@ -1,4 +1,4 @@
-# Finatra Seed Project
+# Finatra Mysql Seed Project
 [Finatra](https://twitter.github.io/finatra/) +
 [TypesafeConfig](https://github.com/typesafehub/config) +
 [Swagger](https://github.com/xiaodongw/swagger-finatra) +
@@ -45,9 +45,9 @@ mysqld
 
 ```bash
 # clone repostitory
-git clone git@github.com:ikhoon/finatra-quill-seed.git
+git clone git@github.com:ikhoon/finatra-mysql-seed.git
 
-cd finatra-quill-seed/
+cd finatra-mysql-seed/
 
 # initialize mysql table & data
 mysql -u root < sql/1.sql
@@ -55,73 +55,10 @@ mysql -u root < sql/1.sql
 # Start finatra server
 ./activator run
 ...
-[info] Loading project definition from finatra-quill-seed/project
-[info] Set current project to finatra-quill-seed(in build file:finatra-quill-seed/)
+[info] Loading project definition from finatra-mysql-seed/project
+[info] Set current project to finatra-mysql-seed(in build file:finatra-mysql-seed/)
 [info] Running com.github.ikhoon.FinatraServerMain
 ...
-```
-
-### Auto Restart FinatraServer using [spray/sbt-resolver](https://github.com/spray/sbt-revolver)
-```bash
-./activator "~re-start"
-...
-[info] Loading project definition from finatra-quill-seed/project
-[info] Set current project to finatra-quill-seed(in build file:finatra-quill-seed/)
-...
-```
-
-### Create a fat JAR with compact all of its dependencies
-```bash
-# build single jar
-./activator assembly
-...
-[info] Assembly up to date: finatra-quill-seed/target/scala-2.11/finatra-quill-seed-0.0.1-SNAPSHOT.jar
-[success] Total time: 10 s, completed Dec 3, 2015 5:08:01 PM
-```
-
-### Start Standalone Server
-```bash
-cd target/scala-2.11/
-# Development mode with default logback.xml
-java -jar somc-1.0.0-SNAPSHOT.jar -mode dev
-# Production mode with specified logback config file
-java -jar -Dlogback.configurationFile=conf/real-logback.xml somc-1.0.0-SNAPSHOT.jar -mode real
-```
-
-### Run modes
-#### dev(default)
-Run with [`resources/conf/dev.conf`](./src/main/resources/conf/dev.conf) & [`resources/logback.xml`](./src/main/resources/logback.xml)
-
-#### Custom run mode needs two files
-* typesafe config : src/main/resources/conf/xxx.conf
-* logback.xml : src/main/resources/conf/xxx-logback.xml
-* Run `java -jar -Dlogback.configurationFile=conf/xxx-logback.xml finatra-quill-seed-1.0.0-SNAPSHOT.jar -mode xxx`
-
-### Show [Twitter Server flags](http://twitter.github.io/finatra/user-guide/getting-started/#flags)
-```bash
-java -jar finatra-seed-project-1.0.0-SNAPSHOT.jar -help
-...
-flags:
-  -help='false': Show this help
-  -http.announce='java.lang.String': Address to announce HTTP server to
-  -http.name='http': Http server name
-  -http.port=':9999': External HTTP server port
-  -https.announce='java.lang.String': Address to announce HTTPS server to
-  -https.name='https': Https server name
-  -https.port='': HTTPs Port
-  -key.path='': path to SSL key
-  -local.doc.root='': File serving directory for local development
-  -log.append='true': If true, appends to existing logfile. Otherwise, file is truncated.
-  -log.async='true': Log asynchronously
-  -log.async.maxsize='4096': Max queue size for async logging
-  -log.level='INFO': Log level
-  -log.output='/dev/stderr': Output file
-  -maxRequestSize='5242880.bytes': HTTP(s) Max Request Size
-# set run mode with `-mode`
-  -mode='dev': application run mode [dev:default, alpha, sandbox, beta, real]
-  -mustache.templates.dir='templates': templates resource directory
-  -shutdown.time='1.minutes': Maximum amount of time to wait for pending requests to complete on shutdown
-  -tracingEnabled='true': Tracing enabled
 ```
 
 
@@ -256,24 +193,82 @@ class FakeService @Inject() (@Named("fake") httpClient: HttpClient, config: Conf
 }
 ```
 
+## Auto Restart FinatraServer using [spray/sbt-resolver](https://github.com/spray/sbt-revolver)
+```bash
+./activator "~re-start"
+...
+[info] Loading project definition from finatra-mysql-seed/project
+[info] Set current project to finatra-mysql-seed(in build file:finatra-mysql-seed/)
+...
+```
+
+## Create a fat JAR with compact all of its dependencies
+```bash
+# build single jar
+./activator assembly
+...
+[info] Assembly up to date: finatra-mysql-seed/target/scala-2.11/finatra-mysql-seed-0.0.1-SNAPSHOT.jar
+[success] Total time: 10 s, completed Dec 3, 2015 5:08:01 PM
+```
+
+## Start Standalone Server
+```bash
+cd target/scala-2.11/
+# Development mode with default logback.xml
+java -jar somc-1.0.0-SNAPSHOT.jar -mode dev
+# Production mode with specified logback config file
+java -jar -Dlogback.configurationFile=conf/real-logback.xml somc-1.0.0-SNAPSHOT.jar -mode real
+```
+
+## Run modes
+### dev(default)
+Run with [`resources/conf/dev.conf`](./src/main/resources/conf/dev.conf) & [`resources/logback.xml`](./src/main/resources/logback.xml)
+
+### Custom run mode needs two files
+* typesafe config : src/main/resources/conf/xxx.conf
+* logback.xml : src/main/resources/conf/xxx-logback.xml
+* Run `java -jar -Dlogback.configurationFile=conf/xxx-logback.xml finatra-mysql-seed-1.0.0-SNAPSHOT.jar -mode xxx`
+
+### Show [Twitter Server flags](http://twitter.github.io/finatra/user-guide/getting-started/#flags)
+```bash
+java -jar finatra-seed-project-1.0.0-SNAPSHOT.jar -help
+...
+flags:
+  -help='false': Show this help
+  -http.announce='java.lang.String': Address to announce HTTP server to
+  -http.name='http': Http server name
+  -http.port=':9999': External HTTP server port
+  -https.announce='java.lang.String': Address to announce HTTPS server to
+  -https.name='https': Https server name
+  -https.port='': HTTPs Port
+  -key.path='': path to SSL key
+  -local.doc.root='': File serving directory for local development
+  -log.append='true': If true, appends to existing logfile. Otherwise, file is truncated.
+  -log.async='true': Log asynchronously
+  -log.async.maxsize='4096': Max queue size for async logging
+  -log.level='INFO': Log level
+  -log.output='/dev/stderr': Output file
+  -maxRequestSize='5242880.bytes': HTTP(s) Max Request Size
+# set run mode with `-mode`
+  -mode='dev': application run mode [dev:default, alpha, sandbox, beta, real]
+  -mustache.templates.dir='templates': templates resource directory
+  -shutdown.time='1.minutes': Maximum amount of time to wait for pending requests to complete on shutdown
+  -tracingEnabled='true': Tracing enabled
+```
+
 ## RESTful API Document using Swagger
 * Write your swagger document using [swagger-finatra](https://github.com/xiaodongw/swagger-finatra) - [Add document information for you controller](https://github.com/xiaodongw/swagger-finatra#add-document-information-for-you-controller)
 * After start server, open document url [`http://localhost:9999/api-docs/ui`](http://localhost:9999/api-docs/ui)
 
-
-## Auto Restart
-[Restart server](https://github.com/spray/sbt-revolver) if scala file has changed.
-```bash
-./activator "~re-start"
-```
 
 ## Remote Debugging
 ```bash
 ./activator -jvm-debug <port> run
 ```
 Reference : http://stackoverflow.com/questions/19473941/how-to-debug-play-application-using-activator
+
 ## Troubleshooting
-If `sbt run` or `activator run` raise dependencies error then clear ivy's cache files and retry.
+When `sbt run` or `activator run` raise dependencies error, clear ivy's cache files and retry run.
 ```bash
 rm -rf ~/.ivy2/cache/
 ```
