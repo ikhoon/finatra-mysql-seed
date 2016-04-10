@@ -32,6 +32,17 @@
 * [Guice Wiki](https://github.com/google/guice/wiki/Motivation)
 
 
+## How to use This Template
+1. if you have activator 
+```bash
+activator new PROJECTNAME finatra-mysql-seed
+```
+2. Just git clone
+```bash
+git clone git@github.com:ikhoon/finatra-mysql-seed.git
+```
+
+
 ## Getting Started
 
 ### Install MySQL on Mac OSX using Homebrew
