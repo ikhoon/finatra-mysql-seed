@@ -157,7 +157,7 @@ class SlickUserRepository @Inject() (db: SlickDataBaseSource) {
 }
 ```
 
-### Register Finagle Http Client
+### Http Programming with Finagle Http Client
 ```scala
 // Create Http Client Module
 object FakeHttpClientModule {
