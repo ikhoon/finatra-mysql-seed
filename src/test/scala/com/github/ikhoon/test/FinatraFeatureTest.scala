@@ -14,7 +14,7 @@ class FinatraFeatureTest extends FeatureTest {
       server.httpGet(
         path = "/ping",
         andExpect = Ok,
-        withBody = "pong"
+        withBody = """{"pong":"pong"}"""
       )
     }
   }

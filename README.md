@@ -207,7 +207,7 @@ class FakeService @Inject() (@Named("fake") httpClient: HttpClient, config: Conf
 # build single jar
 ./activator assembly
 ...
-[info] Assembly up to date: finatra-mysql-seed/target/scala-2.11/finatra-mysql-seed-0.0.1-SNAPSHOT.jar
+[info] Assembly up to date: finatra-mysql-seed/target/scala-2.11/finatra-mysql-seed.jar
 [success] Total time: 10 s, completed Dec 3, 2015 5:08:01 PM
 ```
 
@@ -215,9 +215,9 @@ class FakeService @Inject() (@Named("fake") httpClient: HttpClient, config: Conf
 ```bash
 cd target/scala-2.11/
 # Development mode with default logback.xml
-java -jar somc-1.0.0-SNAPSHOT.jar -mode dev
+java -jar finatra-mysql-seed.jar -mode dev
 # Production mode with specified logback config file
-java -jar -Dlogback.configurationFile=conf/real-logback.xml somc-1.0.0-SNAPSHOT.jar -mode real
+java -jar -Dlogback.configurationFile=conf/real-logback.xml finatra-mysql-seed.jar -mode real
 ```
 
 ## Run modes
@@ -227,11 +227,11 @@ Run with [`resources/conf/dev.conf`](./src/main/resources/conf/dev.conf) & [`res
 ### Custom run mode needs two files
 * typesafe config : src/main/resources/conf/xxx.conf
 * logback.xml : src/main/resources/conf/xxx-logback.xml
-* Run `java -jar -Dlogback.configurationFile=conf/xxx-logback.xml finatra-mysql-seed-1.0.0-SNAPSHOT.jar -mode xxx`
+* Run `java -jar -Dlogback.configurationFile=conf/xxx-logback.xml finatra-mysql-seed.jar -mode xxx`
 
 ### Show [Twitter Server flags](http://twitter.github.io/finatra/user-guide/getting-started/#flags)
 ```bash
-java -jar finatra-seed-project-1.0.0-SNAPSHOT.jar -help
+java -jar finatra-mysql-seed.jar -help
 ...
 flags:
   -help='false': Show this help
