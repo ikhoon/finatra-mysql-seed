@@ -1,0 +1,11 @@
+.DS_Store
+.idea
+*.iml
+*.ipr
+*.log
+.sbtserver*
+sbt-ui.sbt
+classes/
+target/
+logs/
+sbt-launch.jar

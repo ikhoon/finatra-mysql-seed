@@ -1,0 +1,36 @@
+<configuration>
+
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>logs/application.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <fileNamePattern>logs/application.log.%d{yyyy-MM-dd}</fileNamePattern>
+      <maxHistory>30</maxHistory>
+    </rollingPolicy>
+    <encoder>
+      <pattern>%date - %-5p %t %-25logger{0} %F:%L %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%date - %-5p %t %-25logger{0} %F:%L %m%n</pattern>
+    </encoder>
+  </appender>
+
+  <appender name="ASYNC-FILE" class="ch.qos.logback.classic.AsyncAppender">
+    <appender-ref ref="FILE"/>
+  </appender>
+
+  <logger name="com.github.ikhoon" level="DEBUG" />
+
+  <root level="INFO">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="ASYNC-FILE" />
+  </root>
+
+  <logger name="com.twitter.finatra.http.filters.AccessLoggingFilter" level="info" additivity="true">
+    <appender-ref ref="STDOUT" />
+    <appender-ref ref="ASYNC-FILE"/>
+  </logger>
+
+</configuration>
