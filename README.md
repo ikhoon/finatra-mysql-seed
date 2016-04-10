@@ -33,11 +33,11 @@
 
 
 ## How to use This Template
-1. if you have activator 
+Option 1. if you have activator 
 ```bash
 activator new PROJECTNAME finatra-mysql-seed
 ```
-2. Just git clone
+Option 2. Just git clone this project
 ```bash
 git clone git@github.com:ikhoon/finatra-mysql-seed.git
 ```
