@@ -92,13 +92,11 @@ class SampleController extends Controller {
 }
 ```
 
-### Register Controller and Routing
-
-Edit [FinatraServer.scala](./src/main/scala/com/github/ikhoon/FinatraServer.scala)
+### Register Controller and Router on [FinatraServer](https://github.com/ikhoon/finatra-mysql-seed/blob/master/src/main/scala/com/github/ikhoon/FinatraServer.scala)
 ```scala
-object ServerMain extends SearchServer
+object FinatraServerMain extends FinatraServer
 
-class SearchServer extends HttpServer {
+class FinatraServer extends HttpServer {
 
   override def configureHttp(router: HttpRouter) {
     router
@@ -108,6 +106,30 @@ class SearchServer extends HttpServer {
 ```
 
 ### Mysql Access with Quill
+
+#### Define Quill Module
+```scala
+import com.google.inject.{ Singleton, Provides }
+import com.twitter.inject.TwitterModule
+import com.typesafe.config.Config
+import io.getquill.FinagleMysqlSourceConfig
+import io.getquill.naming.SnakeCase
+import io.getquill._
+import io.getquill.sources.finagle.mysql.FinagleMysqlSource
+
+object QuillDatabaseModule extends TwitterModule {
+
+  type QuillDatabaseSource = FinagleMysqlSource[SnakeCase]
+
+  @Provides @Singleton
+  def provideDataBaseSource(conf: Config): QuillDatabaseSource = source(new FinagleMysqlSourceConfig[SnakeCase]("") {
+    override def config = conf.getConfig("quill.db")
+  })
+
+}
+```
+
+#### Inject Quill using Guice
 ```scala
 // Define model
 case class Users( id: Int, name: String, createdAt: Date)
@@ -133,6 +155,26 @@ class QuillUserRepository @Inject() (db: QuillDatabaseSource) {
 ```
 
 ### Mysql Access with Slick
+
+#### Define Slick Module 
+```scala
+import javax.inject.Singleton
+
+import com.google.inject.Provides
+import com.twitter.inject.TwitterModule
+import com.typesafe.config.Config
+
+object SlickDatabaseModule extends TwitterModule {
+  import slick.driver.MySQLDriver.api._
+  type SlickDataBaseSource = slick.driver.MySQLDriver.api.Database
+
+  @Singleton @Provides
+  def provideDatabase(config: Config): SlickDataBaseSource = Database.forConfig("slick.db", config)
+
+}
+```
+
+#### Inject Slick using Guice
 ```scala
 // Define model
 import org.joda.time.DateTime
@@ -169,8 +211,25 @@ class SlickUserRepository @Inject() (db: SlickDataBaseSource) {
 ```
 
 ### Http Programming with Finagle Http Client
+
+#### Define default [HTTP Host header](https://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.23) for finagle http client
+> Otherwise [finatra http client request builder](https://github.com/twitter/finatra/blob/develop/httpclient/src/main/scala/com/twitter/finatra/httpclient/RequestBuilder.scala) doesn't work.
+
 ```scala
-// Create Http Client Module
+abstract class BasicHttpClientModule() extends TwitterModule {
+
+  protected def provideHttpClient(mapper: FinatraObjectMapper, host: String, port: Int = 80): HttpClient = {
+    val httpClientModule = new HttpClientModule {
+      override def dest: String = s"$host:$port"
+      override def defaultHeaders: Map[String, String] = Map("Host" -> host)
+    }
+    httpClientModule.provideHttpClient(mapper, httpClientModule.provideHttpService)
+  }
+}
+```
+
+#### Create HttpClient Module with host and port
+```scala
 object FakeHttpClientModule {
   def apply() = new BasicHttpClientModule {
     @Named("fake") @Provides @Singleton
@@ -178,8 +237,10 @@ object FakeHttpClientModule {
       super.provideHttpClient(mapper, config.as[String]("fake.host"), config.as[Int]("fake.port"))
   }
 }
+```
 
-// Register fake client on FinatraServer
+#### Resister HttpClient on FinatraServer
+```scala
 class FinatraServer extends HttpServer {
   override def modules = Seq(FakeHttpClientModule())
   ...

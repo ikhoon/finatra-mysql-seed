@@ -8,9 +8,6 @@ import io.getquill.naming.SnakeCase
 import io.getquill._
 import io.getquill.sources.finagle.mysql.FinagleMysqlSource
 
-/**
- * Created by ikhoon on 2016. 4. 10..
- */
 object QuillDatabaseModule extends TwitterModule {
 
   type QuillDatabaseSource = FinagleMysqlSource[SnakeCase]
