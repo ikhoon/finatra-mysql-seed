@@ -247,7 +247,7 @@ class FinatraServer extends HttpServer {
 }
 
 // Use Http Client
-// file : FackService.scala
+// file : FakeService.scala
 import javax.inject.{ Inject, Named }
 
 import com.fasterxml.jackson.databind.JsonNode
