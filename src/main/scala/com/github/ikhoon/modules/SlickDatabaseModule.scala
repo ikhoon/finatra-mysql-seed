@@ -8,9 +8,9 @@ import com.typesafe.config.Config
 
 object SlickDatabaseModule extends TwitterModule {
   import slick.driver.MySQLDriver.api._
-  type SlickDataBaseSource = slick.driver.MySQLDriver.api.Database
+  type SlickDatabaseSource = slick.driver.MySQLDriver.api.Database
 
   @Singleton @Provides
-  def provideDatabase(config: Config): SlickDataBaseSource = Database.forConfig("slick.db", config)
+  def provideDatabase(config: Config): SlickDatabaseSource = Database.forConfig("slick.db", config)
 
 }

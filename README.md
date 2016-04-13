@@ -166,10 +166,10 @@ import com.typesafe.config.Config
 
 object SlickDatabaseModule extends TwitterModule {
   import slick.driver.MySQLDriver.api._
-  type SlickDataBaseSource = slick.driver.MySQLDriver.api.Database
+  type SlickDatabaseSource = slick.driver.MySQLDriver.api.Database
 
   @Singleton @Provides
-  def provideDatabase(config: Config): SlickDataBaseSource = Database.forConfig("slick.db", config)
+  def provideDatabase(config: Config): SlickDatabaseSource = Database.forConfig("slick.db", config)
 
 }
 ```
@@ -183,14 +183,14 @@ case class Users(id: Long, name: String, createdAt: DateTime)
 // Define slick table & repository
 import javax.inject.Inject
 
-import com.github.ikhoon.modules.SlickDatabaseModule.SlickDataBaseSource
+import com.github.ikhoon.modules.SlickDatabaseModule.SlickDatabaseSource
 import com.github.tototoshi.slick.MySQLJodaSupport._
 import org.joda.time.DateTime
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class SlickUserRepository @Inject() (db: SlickDataBaseSource) {
+class SlickUserRepository @Inject() (db: SlickDatabaseSource) {
 
   import driver.api._
   private class UserTable(tag: Tag) extends Table[Users](tag, "users") {
@@ -340,7 +340,7 @@ flags:
 Reference : http://stackoverflow.com/questions/19473941/how-to-debug-play-application-using-activator
 
 ## Troubleshooting
-When `sbt run` or `activator run` raise dependencies error, clear ivy's cache files and retry run.
+`sbt run` or `activator run` raise dependency errors, clear ivy's cache files and retry run.
 ```bash
 rm -rf ~/.ivy2/cache/
 ```
