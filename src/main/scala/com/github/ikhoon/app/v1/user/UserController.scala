@@ -6,7 +6,10 @@ import com.github.ikhoon.swagger.SimpleSwaggerSupport
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 
-class UserController @Inject() (userService: UserService) extends Controller with SimpleSwaggerSupport {
+class UserController @Inject() (
+  userService:      UserService,
+  userPointService: UserPointService
+) extends Controller with SimpleSwaggerSupport {
 
   {
     import com.github.ikhoon.swagger.SwaggerDocument.FindUserByIdWithQuillDocument
@@ -19,6 +22,13 @@ class UserController @Inject() (userService: UserService) extends Controller wit
     import com.github.ikhoon.swagger.SwaggerDocument.FindUserByIdWithSlickDocument
     get("/users/:id/slick") { request: Request =>
       userService.findByIdWithSlick(request.getLongParam("id"))
+    }
+  }
+
+  {
+    import com.github.ikhoon.swagger.SwaggerDocument.FindUserByIdWithSlickDocument
+    get("/users/:email/point") { request: Request =>
+      userPointService.getPointByUserEmail(request.getParam("email"))
     }
   }
 }

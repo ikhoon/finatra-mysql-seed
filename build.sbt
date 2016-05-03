@@ -85,6 +85,8 @@ libraryDependencies ++= Seq(
   "com.typesafe" % "config" % versions.typesafeConfig,
   "com.iheart" %% "ficus" % versions.ficus, // for scala friendly typesafe config
 
+  // reflect
+  "org.scala-lang" % "scala-reflect" % scalaVersion.value,
   // others
   "ch.qos.logback" % "logback-classic" % versions.logback,
 

@@ -11,7 +11,11 @@ import com.twitter.finatra.http.Controller
  */
 class FakeController @Inject() (fakeService: FakeService) extends Controller {
 
-  get("/sleep/:id") { request: Request =>
-    fakeService.withSleep(request.getIntParam("id"))
+  get("/sleep/:id/async") { request: Request =>
+    fakeService.withSleepAsync(request.getIntParam("id"))
+  }
+
+  get("/sleep/:id/sync") { request: Request =>
+    fakeService.withSleepSync(request.getIntParam("id"))
   }
 }

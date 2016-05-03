@@ -16,4 +16,10 @@ class QuillUserRepository @Inject() (db: QuillDatabaseSource) {
     db.run(q)(id).map(_.headOption)
   }
 
+  def findByEmail(email: String): Future[Option[Users]] = {
+    val q = quote { (email: String) =>
+      query[Users].filter(i => i.email == email).take(1)
+    }
+    db.run(q)(email).map(_.headOption)
+  }
 }
