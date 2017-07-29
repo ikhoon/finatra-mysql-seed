@@ -2,15 +2,28 @@ package com.github.ikhoon.test
 
 import org.scalatest.FunSuite
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ ExecutionContext, Future }
 
 /**
  * Created by ikhoon on 2016. 5. 2..
  */
+
+case class FutureSeq[+A](future: Future[Seq[A]]) {
+  def flatMap[B](f: A => FutureSeq[B])(implicit ec: ExecutionContext): FutureSeq[B] =
+    FutureSeq(future.flatMap {
+      case a => Future.sequence(a.map(f andThen (_.future))).map(_.flatten)
+    })
+
+  def map[B](f: A => B)(implicit ec: ExecutionContext): FutureSeq[B] = FutureSeq(future.map(_.map(f)))
+
+  def filter(p: A ⇒ Boolean)(implicit ec: ExecutionContext): FutureSeq[A] = withFilter(p)(ec)
+
+  def withFilter(p: A ⇒ Boolean)(implicit ec: ExecutionContext): FutureSeq[A] =
+    FutureSeq(future.map(_.filter(p)))
+}
 class FutureTransformerTest extends FunSuite {
   test("monad test") {
     import scala.concurrent.Future
-    import scala.concurrent.ExecutionContext.Implicits.global
 
     case class Order(id: Int, userId: Long, addr: String)
     case class Item(id: Int, name: String, price: Long)
@@ -34,10 +47,13 @@ class FutureTransformerTest extends FunSuite {
     )
 
     // 주문내역을 가져오는 API
-    def getOrders(userId: Int): Future[List[Order]] = Future.successful(orders.get(userId).get)
+    def getOrders(userId: Int)(implicit ec: ExecutionContext): Future[List[Order]] =
+      Future.successful(orders.get(userId).get)
     // 주문의 상품 내역을 가져오는 API
-    def getOrderItems(order: Order): Future[List[Item]] = Future.successful(orderItems.get(order.id).get)
+    def getOrderItems(order: Order)(implicit ec: ExecutionContext): Future[List[Item]] =
+      Future.successful(orderItems.get(order.id).get)
 
+    import scala.concurrent.ExecutionContext.Implicits.global
     val userId = 1
     val user1_OrderItems: Future[List[Item]] = for {
       orderList: List[Order] <- getOrders(userId)
@@ -52,19 +68,6 @@ class FutureTransformerTest extends FunSuite {
     } yield itemList
 
     user1_OrderItems.foreach(println)
-    case class FutureSeq[+A](future: Future[Seq[A]]) {
-      def flatMap[B](f: A => FutureSeq[B])(implicit ec: ExecutionContext): FutureSeq[B] =
-        FutureSeq(future.flatMap {
-          case a => Future.sequence(a.map(f andThen (_.future))).map(_.flatten)
-        })
-
-      def map[B](f: A => B)(implicit ec: ExecutionContext): FutureSeq[B] = FutureSeq(future.map(_.map(f)))
-
-      def filter(p: A ⇒ Boolean)(implicit ec: ExecutionContext): FutureSeq[A] = withFilter(p)(ec)
-
-      def withFilter(p: A ⇒ Boolean)(implicit ec: ExecutionContext): FutureSeq[A] =
-        FutureSeq(future.map(_.filter(p)))
-    }
 
     val user2_OrderItems = for {
       // 비동기로 유저의 상품내역을 가져옴

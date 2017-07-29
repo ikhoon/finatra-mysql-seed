@@ -1,20 +1,16 @@
 package com.github.ikhoon.modules
 
-import com.google.inject.{ Singleton, Provides }
+import com.google.inject.{ Provides, Singleton }
 import com.twitter.inject.TwitterModule
 import com.typesafe.config.Config
-import io.getquill.FinagleMysqlSourceConfig
-import io.getquill.naming.SnakeCase
-import io.getquill._
-import io.getquill.sources.finagle.mysql.FinagleMysqlSource
+import io.getquill.{ FinagleMysqlContext, SnakeCase }
 
 object QuillDatabaseModule extends TwitterModule {
 
-  type QuillDatabaseSource = FinagleMysqlSource[SnakeCase]
+  type QuillDatabaseSource = FinagleMysqlContext[SnakeCase]
 
   @Provides @Singleton
-  def provideDataBaseSource(conf: Config): QuillDatabaseSource = source(new FinagleMysqlSourceConfig[SnakeCase]("") {
-    override def config = conf.getConfig("quill.db")
-  })
+  def provideDataBaseSource(conf: Config): QuillDatabaseSource =
+    new FinagleMysqlContext[SnakeCase](conf.getConfig("quill.db"))
 
 }

@@ -2,7 +2,6 @@ package com.github.ikhoon.app.v1.fake
 
 import javax.inject.Inject
 
-import com.github.ikhoon.swagger.SimpleSwaggerSupport
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 

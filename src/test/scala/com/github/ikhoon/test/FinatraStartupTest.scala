@@ -2,7 +2,7 @@ package com.github.ikhoon.test
 
 import com.github.ikhoon.FinatraServer
 import com.google.inject.Stage
-import com.twitter.finatra.http.test.EmbeddedHttpServer
+import com.twitter.finatra.http.EmbeddedHttpServer
 import com.twitter.inject.Test
 
 class FinatraStartupTest extends Test {
@@ -12,7 +12,7 @@ class FinatraStartupTest extends Test {
     twitterServer = new FinatraServer
   )
 
-  "server" in {
+  test("server") {
     server.assertHealthy()
   }
 }

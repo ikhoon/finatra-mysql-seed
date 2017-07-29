@@ -1,14 +1,14 @@
 # Finatra Mysql Seed Project
 [Finatra](https://twitter.github.io/finatra/) +
 [TypesafeConfig](https://github.com/typesafehub/config) +
-[Swagger](https://github.com/xiaodongw/swagger-finatra) +
+[Swagger](https://github.com/jakehschwartz/finatra-swagger) +
 [Slick](http://slick.typesafe.com/) +
 [Quill](http://getquill.io/) with
 [Mysql](https://www.mysql.com/) seed Project
 
 ## Development Environments
 ### Requirements
-* [Scala 2.11.x](http://www.scala-lang.org/)
+* [Scala 2.12.x](http://www.scala-lang.org/)
 * [Java 8](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html) - [Typesafe Config(1.3.0) only supports Java 8](https://github.com/typesafehub/config#binary-releases)
 * [Mysql](https://www.mysql.com/)
 
@@ -21,7 +21,7 @@
 * [ScalaTest](http://www.scalatest.org/) - A testing tool for Scala and Java developers.
 * [TypesafeConfig](https://github.com/typesafehub/config) - Configuration library for JVM languages.
 * [Logback](http://logback.qos.ch/) - The Generic, Reliable, Fast & Flexible Logging Framework.
-* [Swagger](https://github.com/xiaodongw/swagger-finatra) - Add Swagger support for Finatra web framework.
+* [Swagger](https://github.com/jakehschwartz/finatra-swagger) - Add Swagger support for Finatra web framework.
 
 ## Development Resource Links
 * [Scala School](http://twitter.github.io/scala_school/index.html)
@@ -94,6 +94,7 @@ class SampleController extends Controller {
 
 ### Register Controller and Router on [FinatraServer](https://github.com/ikhoon/finatra-mysql-seed/blob/master/src/main/scala/com/github/ikhoon/FinatraServer.scala)
 ```scala
+import com.twitter.finatra.http.HttpServer
 object FinatraServerMain extends FinatraServer
 
 class FinatraServer extends HttpServer {
@@ -109,22 +110,18 @@ class FinatraServer extends HttpServer {
 
 #### Define Quill Module
 ```scala
-import com.google.inject.{ Singleton, Provides }
+import com.google.inject.{ Provides, Singleton }
 import com.twitter.inject.TwitterModule
 import com.typesafe.config.Config
-import io.getquill.FinagleMysqlSourceConfig
-import io.getquill.naming.SnakeCase
-import io.getquill._
-import io.getquill.sources.finagle.mysql.FinagleMysqlSource
+import io.getquill.{ FinagleMysqlContext, SnakeCase }
 
 object QuillDatabaseModule extends TwitterModule {
 
-  type QuillDatabaseSource = FinagleMysqlSource[SnakeCase]
+  type QuillDatabaseSource = FinagleMysqlContext[SnakeCase]
 
   @Provides @Singleton
-  def provideDataBaseSource(conf: Config): QuillDatabaseSource = source(new FinagleMysqlSourceConfig[SnakeCase]("") {
-    override def config = conf.getConfig("quill.db")
-  })
+  def provideDataBaseSource(conf: Config): QuillDatabaseSource =
+    new FinagleMysqlContext[SnakeCase](conf.getConfig("quill.db"))
 
 }
 ```
@@ -142,7 +139,7 @@ import com.twitter.util.Future
 import io.getquill._
 
 @Singleton
-class QuillUserRepository @Inject() (db: QuillDatabaseSource) {
+class QuillUserRepository @Inject() (val ctx: QuillDatabaseSource) extends QuillExtensions {
 
   def findById(id: Int): Future[Option[Users]] = {
     val q = quote { (id: Int) =>
@@ -165,8 +162,8 @@ import com.twitter.inject.TwitterModule
 import com.typesafe.config.Config
 
 object SlickDatabaseModule extends TwitterModule {
-  import slick.driver.MySQLDriver.api._
-  type SlickDatabaseSource = slick.driver.MySQLDriver.api.Database
+  import slick.jdbc.MySQLProfile.api._
+  type SlickDatabaseSource = slick.jdbc.MySQLProfile.api.Database
 
   @Singleton @Provides
   def provideDatabase(config: Config): SlickDatabaseSource = Database.forConfig("slick.db", config)
@@ -329,8 +326,30 @@ flags:
 ```
 
 ## RESTful API Document using Swagger
-* Write your swagger document using [swagger-finatra](https://github.com/xiaodongw/swagger-finatra) - [Add document information for you controller](https://github.com/xiaodongw/swagger-finatra#add-document-information-for-you-controller)
-* After start server, open document url [`http://localhost:9999/api-docs/ui`](http://localhost:9999/api-docs/ui)
+* Write your swagger document using [finatra-swagger](https://github.com/jakehschwartz/finatra-swagger) - [Add document information for you controller](https://github.com/jakehschwartz/finatra-swagger#getting-started)
+```scala
+import javax.inject.Inject
+
+import com.github.ikhoon.swagger.SimpleSwaggerController
+import com.twitter.finagle.http.Request
+import io.swagger.models.Swagger
+class UserController @Inject() (
+  userService:      UserService,
+  userPointService: UserPointService,
+  s:                Swagger
+) extends SimpleSwaggerController {
+
+  {
+    import com.github.ikhoon.swagger.SwaggerDocument.FindUserByIdWithQuillDocument
+    // Custom Routing Method for SwaggerDocument injection
+    Get("/users/:id/quill") { request: Request =>
+      userService.findByIdWithQuill(request.getIntParam("id"))
+    }
+  }
+}
+```
+* After start server, open document url [`http://localhost:9999/api-docs`](http://localhost:9999/api-docs)
+
 
 
 ## Remote Debugging

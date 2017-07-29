@@ -5,19 +5,18 @@ package object ikhoon {
   import com.twitter.{ util => twitter }
 
   import language.implicitConversions
-  import scala.concurrent.ExecutionContext.Implicits.global
   import scala.concurrent.{ ExecutionContext, Future, Promise }
   import scala.util.{ Failure, Success, Try }
   import TwitterConverters._
 
   object TwitterFutureOps {
 
-    implicit class ScalaToTwitterFuture[T](f: Future[T]) {
-      def toTwitterFuture: twitter.Future[T] = f
+    implicit class ScalaToTwitterFuture[T](f: Future[T])(implicit ec: ExecutionContext) {
+      def toTwitterFuture: twitter.Future[T] = scalaToTwitterFuture(f)
     }
 
     implicit class TwitterToScalaFuture[T](f: twitter.Future[T]) {
-      def toScalaFuture: Future[T] = f
+      def toScalaFuture: Future[T] = twitterToScalaFuture(f)
     }
 
     implicit class TwitterFutureFlatten[T](f: twitter.Future[twitter.Future[T]]) {

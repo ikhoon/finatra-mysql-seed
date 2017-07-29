@@ -23,7 +23,7 @@
 
   <logger name="com.github.ikhoon" level="DEBUG" />
 
-  <root level="INFO">
+  <root level="DEBUG">
     <appender-ref ref="STDOUT" />
     <appender-ref ref="ASYNC-FILE" />
   </root>
